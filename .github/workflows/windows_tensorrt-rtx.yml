@@ -55,6 +55,11 @@ jobs:
         echo "CommitCount=$(git rev-list --count HEAD)" >> $env:GITHUB_ENV
         echo "CommitDate=$(git show -s --date=format:'%Y-%m-%d' --format=%cd)" >> $env:GITHUB_ENV
 
+    - name: Print PATH A
+      run: |
+        echo A1 "$Env:Path"
+        echo A2 "${{env.PATH}}"
+
     - name: Cache CUDA
       id: cache-cuda
       uses: actions/cache@v5
@@ -73,6 +78,7 @@ jobs:
       run: |
         echo "CUDA_PATH=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9" >> $env:GITHUB_ENV
         echo "CUDA_PATH_V12_9=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9" >> $env:GITHUB_ENV
+        $Env:Path = "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9\bin\x64;" + $Env:Path
 
 #    - name: Cache cuDNN
 #      id: cache-cudnn
@@ -98,21 +104,21 @@ jobs:
 #      run: |
 #        vcpkg install 
 
-    - name: Print PATH A
+    - name: Print PATH B
       run: |
-        echo A "$Env:Path"
-        echo A "${{env.PATH}}"
+        echo B1 "$Env:Path"
+        echo B2 "${{env.PATH}}"
 
     - name: Download Dependencies
       run: |
         curl --ssl-revoke-best-effort --create-dirs -L "https://developer.nvidia.com/downloads/trt/rtx_sdk/secure/1.1/TensorRT-RTX-1.1.1.26.Windows.win10.cuda-12.9.zip" -o "TensorRT-RTX.zip"
         7z x "TensorRT-RTX.zip"
-        $Env:Path = "${{github.workspace}}\TensorRT-RTX\TensorRT-RTX-1.1.1.26\lib;" + $Env:Path
+        $Env:Path = "${{github.workspace}}\TensorRT-RTX-1.1.1.26\lib;" + $Env:Path
 
-    - name: Print PATH B
+    - name: Print PATH C
       run: |
-        echo B "$Env:Path"
-        echo B "${{env.PATH}}"
+        echo C1 "$Env:Path"
+        echo C2 "${{env.PATH}}"
 
     - name: List files
       run: ls -R
@@ -124,7 +130,7 @@ jobs:
         --build_dir build
         --parallel
         --use_nv_tensorrt_rtx
-        --tensorrt_rtx_home "${{github.workspace}}\TensorRT-RTX\TensorRT-RTX-1.1.1.26"
+        --tensorrt_rtx_home "${{github.workspace}}\TensorRT-RTX-1.1.1.26"
         --cuda_home "${{env.CUDA_PATH}}"
         --cmake_generator "Visual Studio 17 2022"
         --build_shared_lib
