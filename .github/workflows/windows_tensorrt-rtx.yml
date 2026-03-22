@@ -1,0 +1,75 @@
+#Based on template from: https://github.com/ThreeDeeJay/GitHub-Actions-build-templates/blob/main/Windows-CMake.yml
+name: TensorRT RTX
+
+env:
+  GH_TOKEN: ${{github.token}}
+  Branch: ${{github.ref_name}}
+  Artifacts: build/Release
+  Title: ${{github.event.repository.name}}
+  Executable: ${{github.event.repository.name}}.exe # *
+
+on:
+  push:
+    Branches: $Branch
+  pull_request:
+    Branches: $Branch
+  workflow_dispatch:
+
+jobs:
+  Build:
+    name: ${{matrix.Settings.Name}}-${{matrix.Configuration}}
+    runs-on: windows-2022
+    strategy:
+      matrix:
+        Configuration: [Release] #[Release, Debug]
+        Settings:
+#        - {
+#            Name: "Win32",
+#            Platform: "Win32",
+#            Architecture: "x86",
+#            Triplet: "x86-windows"
+#          }
+        - {
+            Name: "Win64",
+            Platform: "x64",
+            Architecture: "x64",
+            Triplet: "x64-windows"
+          }
+          
+    steps:
+
+    - name: Clone repo and submodules
+      run: >
+        git
+        clone https://${{github.repository_owner}}:${{github.token}}@github.com/${{github.repository}}.git
+        "${{github.workspace}}"
+        --branch ${{env.Branch}}
+        --recurse-submodules
+#--depth 1 - Fetches single commit which is faster but breaks commit count
+
+    - name: Get current date, commit hash and count
+      run: |
+        echo "FirstCommitHash=$(git rev-list --max-parents=0 HEAD --first-parent)" >> $env:GITHUB_ENV
+        echo "CommitHash=$(git rev-parse HEAD)" >> $env:GITHUB_ENV
+        echo "CommitHashShort=$(git rev-parse --short=7 HEAD)" >> $env:GITHUB_ENV
+        echo "CommitCount=$(git rev-list --count HEAD)" >> $env:GITHUB_ENV
+        echo "CommitDate=$(git show -s --date=format:'%Y-%m-%d' --format=%cd)" >> $env:GITHUB_ENV
+
+    - name: Cache CUDA
+      id: cache-cuda
+      uses: actions/cache@v5
+      with:
+        path: "C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v12.9"
+        key: CUDA_V12_9
+    - name: Download CUDA
+      if: steps.cache-cuda.outputs.cache-hit != 'true'
+      run: |
+        curl --ssl-revoke-best-effort -L "https://developer.download.nvidia.com/compute/cuda/12.9.1/local_installers/cuda_12.9.1_576.57_windows.exe" -o "CUDA.exe"
+    - name: Install CUDA
+      if: steps.cache-cuda.outputs.cache-hit != 'true'
+      run: |
+        Start-Process -Wait "CUDA.exe" -ArgumentList "-s"
+    - name: Set CUDA path
+      run: |
+        echo "CUDA_PATH=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9" >> $env:GITHUB_ENV
+        echo "CUDA_PATH_V12_9=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9" >> $env:GITHUB_ENV
