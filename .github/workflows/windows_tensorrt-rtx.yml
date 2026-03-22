@@ -79,7 +79,7 @@ jobs:
         echo "CUDA_PATH=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9" >> $env:GITHUB_ENV
         echo "CUDA_PATH_V12_9=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9" >> $env:GITHUB_ENV
         echo "CUDA_HOME=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9" >> $env:GITHUB_ENV
-        echo "PATH=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9;$Env:Path" >> $env:GITHUB_ENV
+        echo "PATH=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9\bin\x64;$Env:Path" >> $env:GITHUB_ENV
 
 #    - name: Cache cuDNN
 #      id: cache-cudnn
