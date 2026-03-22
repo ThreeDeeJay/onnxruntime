@@ -74,12 +74,19 @@ jobs:
       if: steps.cache-cuda.outputs.cache-hit != 'true'
       run: |
         Start-Process -Wait "CUDA.exe" -ArgumentList "-s"
+
     - name: Set CUDA path
       run: |
         echo "CUDA_PATH=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9" >> $env:GITHUB_ENV
         echo "CUDA_PATH_V12_9=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9" >> $env:GITHUB_ENV
         echo "CUDA_HOME=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9" >> $env:GITHUB_ENV
-        echo "PATH=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9\bin\x64;$Env:Path" >> $env:GITHUB_ENV
+        Add-Content -Path $env:GITHUB_PATH -Value "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9\bin"
+#        echo "PATH=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9\bin\x64;$Env:Path" >> $env:GITHUB_ENV
+
+
+
+
+
 
 #    - name: Cache cuDNN
 #      id: cache-cudnn
@@ -114,7 +121,8 @@ jobs:
       run: |
         curl --ssl-revoke-best-effort --create-dirs -L "https://developer.nvidia.com/downloads/trt/rtx_sdk/secure/1.1/TensorRT-RTX-1.1.1.26.Windows.win10.cuda-12.9.zip" -o "TensorRT-RTX.zip"
         7z x "TensorRT-RTX.zip"
-        $Env:Path = "${{github.workspace}}\TensorRT-RTX-1.1.1.26\lib;" + $Env:Path
+        Add-Content -Path $env:GITHUB_PATH -Value "${{github.workspace}}\TensorRT-RTX-1.1.1.26\lib"
+#        $Env:Path = "${{github.workspace}}\TensorRT-RTX-1.1.1.26\lib;" + $Env:Path
 
     - name: Print PATH C
       run: |
@@ -123,7 +131,6 @@ jobs:
 
     - name: List files
       run: ls -R
-
 
     - name: Build
       run: >
@@ -140,6 +147,7 @@ jobs:
         --build
         --update
         --use_vcpkg
+        --cmake_extra_defines CMAKE_CUDA_COMPILER=${{env.CUDA_PATH}}bin\nvcc.exe
 
     - name: List files
       run: ls -R
