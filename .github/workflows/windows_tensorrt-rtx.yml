@@ -81,6 +81,7 @@ jobs:
         echo "CUDA_PATH_V12_9=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9" >> $env:GITHUB_ENV
         echo "CUDA_HOME=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9" >> $env:GITHUB_ENV
         Add-Content -Path $env:GITHUB_PATH -Value "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9\bin"
+        Add-Content -Path $env:GITHUB_PATH -Value "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9\bin\x64"
 #        echo "PATH=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9\bin\x64;$Env:Path" >> $env:GITHUB_ENV
 
 
@@ -147,7 +148,7 @@ jobs:
         --build
         --update
         --use_vcpkg
-        --cmake_extra_defines CMAKE_CUDA_COMPILER="${{env.CUDA_PATH}}bin\nvcc.exe"
+        --cmake_extra_defines CMAKE_CUDA_COMPILER="${{env.CUDA_PATH}}\bin\nvcc.exe"
 
     - name: List files
       run: ls -R
