@@ -100,8 +100,8 @@ jobs:
 
     - name: Print PATH A
       run: |
-        echo $Env:Path
-        echo ${{env.PATH}}
+        echo A "$Env:Path"
+        echo A "${{env.PATH}}"
 
     - name: Download Dependencies
       run: |
@@ -111,8 +111,8 @@ jobs:
 
     - name: Print PATH B
       run: |
-        echo $Env:Path
-        echo ${{env.PATH}}
+        echo B "$Env:Path"
+        echo B "${{env.PATH}}"
 
     - name: List files
       run: ls -R
