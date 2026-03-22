@@ -123,6 +123,15 @@ jobs:
     - name: List files
       run: ls -R
 
+    - name: Configure
+      run: >
+        cmake
+        -A "${{matrix.Settings.Platform}}"
+        -B "${{github.workspace}}/build"
+        -DCMAKE_BUILD_TYPE=${{matrix.Configuration}}
+        -DCMAKE_PREFIX_PATH=vcpkg\installed\${{matrix.Settings.Triplet}}
+        -DCMAKE_CUDA_COMPILER=${{env.CUDA_PATH}}bin\nvcc.exe
+
     - name: Build
       run: >
         .\build.bat
@@ -137,7 +146,7 @@ jobs:
         --skip_tests
         --build
         --update
-        --use_vcpkg        
+        --use_vcpkg
 
     - name: List files
       run: ls -R
