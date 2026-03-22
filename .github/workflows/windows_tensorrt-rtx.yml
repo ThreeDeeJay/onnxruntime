@@ -78,7 +78,8 @@ jobs:
       run: |
         echo "CUDA_PATH=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9" >> $env:GITHUB_ENV
         echo "CUDA_PATH_V12_9=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9" >> $env:GITHUB_ENV
-        $Env:Path = "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9\bin\x64;" + $Env:Path
+        echo "CUDA_HOME=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9" >> $env:GITHUB_ENV
+        echo "PATH=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9;$Env:Path" >> $env:GITHUB_ENV
 
 #    - name: Cache cuDNN
 #      id: cache-cudnn
@@ -123,14 +124,6 @@ jobs:
     - name: List files
       run: ls -R
 
-    - name: Configure
-      run: >
-        cmake
-        -A "${{matrix.Settings.Platform}}"
-        -B "${{github.workspace}}/build"
-        -DCMAKE_BUILD_TYPE=${{matrix.Configuration}}
-        -DCMAKE_PREFIX_PATH=vcpkg\installed\${{matrix.Settings.Triplet}}
-        -DCMAKE_CUDA_COMPILER="${{env.CUDA_PATH}}bin\nvcc.exe"
 
     - name: Build
       run: >
