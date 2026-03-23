@@ -102,7 +102,7 @@ jobs:
 
 
     - name: CUDA Visual Studio integration
-      if: steps.cache-cuda.outputs.cache-hit = 'true'
+      if: steps.cache-cuda.outputs.cache-hit != 'false'
       run: |
         copy "${{env.CUDA_PATH}}\extras\visual_studio_integration\MSBuildExtensions\*" "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Microsoft\VC\v160\BuildCustomizations"
         copy "${{env.CUDA_PATH}}\extras\visual_studio_integration\MSBuildExtensions\*" "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Microsoft\VC\v170\BuildCustomizations"
