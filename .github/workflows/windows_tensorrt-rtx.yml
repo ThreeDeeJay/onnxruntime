@@ -107,10 +107,10 @@ jobs:
         Add-Content -Path $env:GITHUB_PATH -Value "C:\Program Files\NVIDIA\CUDNN\v9.20\bin\12.9\x64"
         echo "PATH=$Env:Path" >> $env:GITHUB_ENV
 
-      - name: Configure path to CUDA
-        shell: powershell
-        run: |
-          [System.Environment]::SetEnvironmentVariable('PATH', "$env:CUDA_PATH\bin;$env:PATH", 'User')
+    - name: Configure path to CUDA
+      shell: powershell
+      run: |
+        [System.Environment]::SetEnvironmentVariable('PATH', "$env:CUDA_PATH\bin;$env:PATH", 'User')
 
 #    - name: Install vcpkg
 #      uses: lukka/run-vcpkg@v11.5
