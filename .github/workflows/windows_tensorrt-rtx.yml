@@ -10,7 +10,7 @@ env:
   CUDA_VERSION_MAJOR: 12
   CUDA_VERSION_MINOR: 9
   CUDA_VERSION_PATCH: 1
-  CUDA_VERSION_DRIVER: 576.57
+  CUDA_DRIVER_VERSION: 576.57
 
 on:
   push:
@@ -68,7 +68,7 @@ jobs:
     - name: Download CUDA
       if: steps.cache-cuda.outputs.cache-hit != 'true'
       run: |
-        curl --ssl-revoke-best-effort -L "https://developer.download.nvidia.com/compute/cuda/${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}.${{env.CUDA_VERSION_PATCH}}/local_installers/cuda_${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}.${{env.CUDA_VERSION_PATCH}}_${{env.CUDA_VERSION_DRIVER}}_windows.exe" -o "CUDA.exe"
+        curl --ssl-revoke-best-effort -L "https://developer.download.nvidia.com/compute/cuda/${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}.${{env.CUDA_VERSION_PATCH}}/local_installers/cuda_${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}.${{env.CUDA_VERSION_PATCH}}_${{env.CUDA_DRIVER_VERSION}}_windows.exe" -o "CUDA.exe"
     - name: Install CUDA
       if: steps.cache-cuda.outputs.cache-hit != 'true'
       run: |
@@ -95,26 +95,26 @@ jobs:
         ls -R "${{env.VS_PATH}}\MSBuild\Microsoft\VC\v160\BuildCustomizations"
         ls -R "${{env.VS_PATH}}\MSBuild\Microsoft\VC\v170\BuildCustomizations"
 
-    - name: Cache cuDNN
-      id: cache-cudnn
-      uses: actions/cache@v5
-      with:
-        path: "C:\\Program Files\\NVIDIA\\CUDNN\\v9.20"
-        key: CUDNN_V9_20
-    - name: Download cuDNN
-      if: steps.cache-cudnn.outputs.cache-hit != 'true'
-      run: |
-        curl --ssl-revoke-best-effort -L "https://developer.download.nvidia.com/compute/cudnn/9.20.0/local_installers/cudnn_9.20.0_windows_x86_64.exe" -o "cuDNN.exe"
-    - name: Install cuDNN
-      if: steps.cache-cudnn.outputs.cache-hit != 'true'
-      run: |
-        Start-Process -Wait "cuDNN.exe" -ArgumentList "-s"
-    - name: Set cuDNN path
-      run: |
-        echo "CUDNN_PATH=C:\Program Files\NVIDIA\CUDNN\v9.20" >> $env:GITHUB_ENV
-        echo "CUDNN_HOME=C:\Program Files\NVIDIA\CUDNN\v9.20" >> $env:GITHUB_ENV
-        Add-Content -Path $env:GITHUB_PATH -Value "C:\Program Files\NVIDIA\CUDNN\v9.20\bin\${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}\x64"
-        echo "PATH=$Env:Path" >> $env:GITHUB_ENV
+#    - name: Cache cuDNN
+#      id: cache-cudnn
+#      uses: actions/cache@v5
+#      with:
+#        path: "C:\\Program Files\\NVIDIA\\CUDNN\\v9.20"
+#        key: CUDNN_V9_20
+#    - name: Download cuDNN
+#      if: steps.cache-cudnn.outputs.cache-hit != 'true'
+#      run: |
+#        curl --ssl-revoke-best-effort -L "https://developer.download.nvidia.com/compute/cudnn/9.20.0/local_installers/cudnn_9.20.0_windows_x86_64.exe" -o "cuDNN.exe"
+#    - name: Install cuDNN
+#      if: steps.cache-cudnn.outputs.cache-hit != 'true'
+#      run: |
+#        Start-Process -Wait "cuDNN.exe" -ArgumentList "-s"
+#    - name: Set cuDNN path
+#      run: |
+#        echo "CUDNN_PATH=C:\Program Files\NVIDIA\CUDNN\v9.20" >> $env:GITHUB_ENV
+#        echo "CUDNN_HOME=C:\Program Files\NVIDIA\CUDNN\v9.20" >> $env:GITHUB_ENV
+#        Add-Content -Path $env:GITHUB_PATH -Value "C:\Program Files\NVIDIA\CUDNN\v9.20\bin\${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}\x64"
+#        echo "PATH=$Env:Path" >> $env:GITHUB_ENV
 
 #    - name: Configure path to CUDA
 #      shell: powershell
