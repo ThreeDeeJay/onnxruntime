@@ -7,10 +7,14 @@ env:
   Artifacts: build/Release/Release
   Title: ${{github.event.repository.name}}
   Executable: ${{github.event.repository.name}}.exe # *
-  CUDA_VERSION_MAJOR: 12
-  CUDA_VERSION_MINOR: 9
-  CUDA_VERSION_PATCH: 1
+  CUDA_VERSION_MAJOR: 13
+  CUDA_VERSION_MINOR: 2
+  CUDA_VERSION_PATCH: 0
   CUDA_DRIVER_VERSION: 576.57
+  TENSORRT_RTX_VERSION_MAJOR: 1
+  TENSORRT_RTX_VERSION_MINOR: 4
+  TENSORRT_RTX_VERSION_PATCH: 0
+  TENSORRT_RTX_VERSION_BUILD: 76
 
 on:
   push:
@@ -68,7 +72,8 @@ jobs:
     - name: Download CUDA
       if: steps.cache-cuda.outputs.cache-hit != 'true'
       run: |
-        curl --ssl-revoke-best-effort -L "https://developer.download.nvidia.com/compute/cuda/${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}.${{env.CUDA_VERSION_PATCH}}/local_installers/cuda_${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}.${{env.CUDA_VERSION_PATCH}}_${{env.CUDA_DRIVER_VERSION}}_windows.exe" -o "CUDA.exe"
+        curl --ssl-revoke-best-effort -L "https://developer.download.nvidia.com/compute/cuda/${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}.${{env.CUDA_VERSION_PATCH}}/local_installers/cuda_${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}.${{env.CUDA_VERSION_PATCH}}_${{env.CUDA_DRIVER_VERSION}}_windows.exe" -o "CUDA.exe" || true
+        curl --ssl-revoke-best-effort -L "https://developer.download.nvidia.com/compute/cuda/${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}.${{env.CUDA_VERSION_PATCH}}/local_installers/cuda_${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}.${{env.CUDA_VERSION_PATCH}}_windows.exe" -o "CUDA.exe" || true
     - name: Install CUDA
       if: steps.cache-cuda.outputs.cache-hit != 'true'
       run: |
@@ -124,10 +129,10 @@ jobs:
 
     - name: Download Dependencies
       run: |
-        curl --ssl-revoke-best-effort --create-dirs -L "https://developer.nvidia.com/downloads/trt/rtx_sdk/secure/1.1/TensorRT-RTX-1.1.1.26.Windows.win10.cuda-12.9.zip" -o "TensorRT-RTX.zip"
+        curl --ssl-revoke-best-effort --create-dirs -L "https://developer.nvidia.com/downloads/trt/rtx_sdk/secure/${{env.TENSORRT_RTX_VERSION_MAJOR}}.${{env.TENSORRT_RTX_VERSION_MINOR}}/TensorRT-RTX-${{env.TENSORRT_RTX_VERSION_MAJOR}}.${{env.TENSORRT_RTX_VERSION_MINOR}}.${{env.TENSORRT_RTX_VERSION_PATCH}}.${{env.TENSORRT_RTX_VERSION_BUILD}}.Windows.win10.cuda-${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}.zip" -o "TensorRT-RTX.zip"
         7z x "TensorRT-RTX.zip"
-        Add-Content -Path $env:GITHUB_PATH -Value "${{github.workspace}}\TensorRT-RTX-1.1.1.26\lib"
-#        $Env:Path = "${{github.workspace}}\TensorRT-RTX-1.1.1.26\lib;" + $Env:Path
+        Add-Content -Path $env:GITHUB_PATH -Value "${{github.workspace}}\TensorRT-RTX-${{env.TENSORRT_RTX_VERSION_MAJOR}}.${{env.TENSORRT_RTX_VERSION_MINOR}}.${{env.TENSORRT_RTX_VERSION_PATCH}}.${{env.TENSORRT_RTX_VERSION_BUILD}}\lib"
+#        $Env:Path = "${{github.workspace}}\TensorRT-RTX-${{env.TENSORRT_RTX_VERSION_MAJOR}}.${{env.TENSORRT_RTX_VERSION_MINOR}}.${{env.TENSORRT_RTX_VERSION_PATCH}}.${{env.TENSORRT_RTX_VERSION_BUILD}}\lib;" + $Env:Path
 
     - name: Print PATH C
       run: |
@@ -144,7 +149,7 @@ jobs:
         --build_dir build
         --parallel
         --use_nv_tensorrt_rtx
-        --tensorrt_rtx_home "${{github.workspace}}\TensorRT-RTX-1.1.1.26"
+        --tensorrt_rtx_home "${{github.workspace}}\TensorRT-RTX-${{env.TENSORRT_RTX_VERSION_MAJOR}}.${{env.TENSORRT_RTX_VERSION_MINOR}}.${{env.TENSORRT_RTX_VERSION_PATCH}}.${{env.TENSORRT_RTX_VERSION_BUILD}}"
         --cuda_home "${{env.CUDA_PATH}}"
         --cmake_generator "Visual Studio 17 2022"
         --build_shared_lib
