@@ -150,6 +150,7 @@ jobs:
         --build
         --update
         --use_vcpkg
+        --cuda_version 12.9
         --cmake_extra_defines CMAKE_CUDA_COMPILER="${{env.CUDA_PATH}}\bin\nvcc"
 
     - name: List files
