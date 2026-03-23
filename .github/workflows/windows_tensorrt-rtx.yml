@@ -62,7 +62,7 @@ jobs:
 
     - name: Get Visual Studio path
       run: |
-        echo "VS_PATH=$("%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -property installationFolder)" >> $env:GITHUB_ENV
+        echo "VS_PATH=$(& "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -property catalog_productDisplayVersion)" >> $env:GITHUB_ENV
 
 
     - name: Print PATH A
