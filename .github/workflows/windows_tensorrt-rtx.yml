@@ -62,7 +62,7 @@ jobs:
 
     - name: Get Visual Studio path
       run: |
-        echo "VS_PATH=$(vswhere.exe -latest -property installationFolder)" >> $env:GITHUB_ENV
+        echo "VS_PATH=$("%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -prerelease -property installationFolder)" >> $env:GITHUB_ENV
 
 
     - name: Print PATH A
@@ -70,12 +70,17 @@ jobs:
         echo A1 "$Env:Path"
         echo A2 "${{env.PATH}}"
 
+    - name: List CUDA Visual Studio integration files
+      run: |
+        ls -R "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}\extras\visual_studio_integration\MSBuildExtensions"
+        ls -R "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Microsoft\VC\v160\BuildCustomizations"
+        ls -R "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Microsoft\VC\v170\BuildCustomizations"
+
     - name: Cache CUDA
       id: cache-cuda
       uses: actions/cache@v5
       with:
-        path: |
-          "C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}"
+        path: "C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}"
         key: CUDA_V${{env.CUDA_VERSION_MAJOR}}_${{env.CUDA_VERSION_MINOR}}
     - name: Download CUDA
       if: steps.cache-cuda.outputs.cache-hit != 'true'
@@ -86,18 +91,31 @@ jobs:
       run: |
         Start-Process -Wait "CUDA.exe" -ArgumentList "-s"
 
-    - name: Cache cuDNN
-      id: cache-cudnn
-      uses: actions/cache@v5
-      with:
-        path: "C:\\Program Files\\NVIDIA\\CUDNN\\v9.20"
-        key: CUDNN_V9_20
-    - name: Download cuDNN
-      if: steps.cache-cudnn.outputs.cache-hit != 'true'
+    - name: Set CUDA path
       run: |
-        curl --ssl-revoke-best-effort -L "https://developer.download.nvidia.com/compute/cudnn/9.20.0/local_installers/cudnn_9.20.0_windows_x86_64.exe" -o "cuDNN.exe"
-    - name: Install cuDNN
-      if: steps.cache-cudnn.outputs.cache-hit != 'true'
+        echo "CUDA_PATH=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}" >> $env:GITHUB_ENV
+        echo "CUDA_PATH_V${{env.CUDA_VERSION_MAJOR}}_${{env.CUDA_VERSION_MINOR}}=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}" >> $env:GITHUB_ENV
+        echo "CUDA_HOME=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}" >> $env:GITHUB_ENV
+        Add-Content -Path $env:GITHUB_PATH -Value "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}\bin"
+        Add-Content -Path $env:GITHUB_PATH -Value "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}\bin\x64"
+        echo "PATH=$Env:Path" >> $env:GITHUB_ENV
+#        echo "PATH=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}\bin\x64;$Env:Path" >> $env:GITHUB_ENV
+
+    - name: List CUDA Visual Studio integration files
       run: |
-        Start-Process -Wait "cuDNN.exe" -ArgumentList "-s"
-        
+        ls -R "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}\extras\visual_studio_integration\MSBuildExtensions"
+        ls -R "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Microsoft\VC\v160\BuildCustomizations"
+        ls -R "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Microsoft\VC\v170\BuildCustomizations"
+
+    - name: CUDA Visual Studio integration
+      if: steps.cache-cuda.outputs.cache-hit != 'false'
+      run: |
+        copy "${{env.CUDA_PATH}}\extras\visual_studio_integration\MSBuildExtensions\*" "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Microsoft\VC\v160\BuildCustomizations"
+        copy "${{env.CUDA_PATH}}\extras\visual_studio_integration\MSBuildExtensions\*" "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Microsoft\VC\v170\BuildCustomizations"
+
+    - name: List CUDA Visual Studio integration files
+      run: |
+        ls -R "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}\extras\visual_studio_integration\MSBuildExtensions"
+        ls -R "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Microsoft\VC\v160\BuildCustomizations"
+        ls -R "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Microsoft\VC\v170\BuildCustomizations"
+
