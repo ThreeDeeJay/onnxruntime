@@ -121,7 +121,7 @@ jobs:
 
     - name: Download TensorRT
       run: |
-        curl --ssl-revoke-best-effort --create-dirs -L "httpshttps://developer.download.nvidia.com/compute/machine-learning/tensorrt/${{env.TENSORRT_VERSION_MAJOR}}.${{env.TENSORRT_VERSION_MINOR}}.${{env.TENSORRT_VERSION_PATCH}}/zip/TensorRT-${{env.TENSORRT_VERSION_MAJOR}}.${{env.TENSORRT_VERSION_MINOR}}.${{env.TENSORRT_VERSION_PATCH}}.${{env.TENSORRT_VERSION_BUILD}}.Windows.amd64.cuda-${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}.zip" -o "TensorRT.zip" || true
+        curl --ssl-revoke-best-effort --create-dirs -L "https://developer.download.nvidia.com/compute/machine-learning/tensorrt/${{env.TENSORRT_VERSION_MAJOR}}.${{env.TENSORRT_VERSION_MINOR}}.${{env.TENSORRT_VERSION_PATCH}}/zip/TensorRT-${{env.TENSORRT_VERSION_MAJOR}}.${{env.TENSORRT_VERSION_MINOR}}.${{env.TENSORRT_VERSION_PATCH}}.${{env.TENSORRT_VERSION_BUILD}}.Windows.amd64.cuda-${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}.zip" -o "TensorRT.zip" || true
         7z x "TensorRT.zip"
         Add-Content -Path $env:GITHUB_PATH -Value "${{github.workspace}}\TensorRT-${{env.TENSORRT_VERSION_MAJOR}}.${{env.TENSORRT_VERSION_MINOR}}.${{env.TENSORRT_VERSION_PATCH}}.${{env.TENSORRT_VERSION_BUILD}}\bin"
 
