@@ -6,10 +6,14 @@ env:
   Branch: ${{github.ref_name}}
   Artifacts: build/Release/Release
   Title: ${{github.event.repository.name}}
-  CUDA_VERSION_MAJOR: 13
-  CUDA_VERSION_MINOR: 2
-  CUDA_VERSION_PATCH: 0
+  CUDA_VERSION_MAJOR: 12
+  CUDA_VERSION_MINOR: 9
+  CUDA_VERSION_PATCH: 1
   CUDA_DRIVER_VERSION: 576.57
+  TENSORRT_VERSION_MAJOR: 10
+  TENSORRT_VERSION_MINOR: 16
+  TENSORRT_VERSION_PATCH: 0
+  TENSORRT_VERSION_BUILD: 72
   TENSORRT_RTX_VERSION_MAJOR: 1
   TENSORRT_RTX_VERSION_MINOR: 4
   TENSORRT_RTX_VERSION_PATCH: 0
@@ -94,26 +98,32 @@ jobs:
         ls -R "${{env.VS_PATH}}\MSBuild\Microsoft\VC\v160\BuildCustomizations"
         ls -R "${{env.VS_PATH}}\MSBuild\Microsoft\VC\v170\BuildCustomizations"
 
-#    - name: Cache cuDNN
-#      id: cache-cudnn
-#      uses: actions/cache@v5
-#      with:
-#        path: "C:\\Program Files\\NVIDIA\\CUDNN\\v9.20"
-#        key: CUDNN_V9_20
-#    - name: Download cuDNN
-#      if: steps.cache-cudnn.outputs.cache-hit != 'true'
-#      run: |
-#        curl --ssl-revoke-best-effort -L "https://developer.download.nvidia.com/compute/cudnn/9.20.0/local_installers/cudnn_9.20.0_windows_x86_64.exe" -o "cuDNN.exe"
-#    - name: Install cuDNN
-#      if: steps.cache-cudnn.outputs.cache-hit != 'true'
-#      run: |
-#        Start-Process -Wait "cuDNN.exe" -ArgumentList "-s"
-#    - name: Set cuDNN path
-#      run: |
-#        echo "CUDNN_PATH=C:\Program Files\NVIDIA\CUDNN\v9.20" >> $env:GITHUB_ENV
-#        echo "CUDNN_HOME=C:\Program Files\NVIDIA\CUDNN\v9.20" >> $env:GITHUB_ENV
-#        Add-Content -Path $env:GITHUB_PATH -Value "C:\Program Files\NVIDIA\CUDNN\v9.20\bin\${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}\x64"
-#        echo "PATH=$Env:Path" >> $env:GITHUB_ENV
+    - name: Cache cuDNN
+      id: cache-cudnn
+      uses: actions/cache@v5
+      with:
+        path: "C:\\Program Files\\NVIDIA\\CUDNN\\v9.20"
+        key: CUDNN_V9_20
+    - name: Download cuDNN
+      if: steps.cache-cudnn.outputs.cache-hit != 'true'
+      run: |
+        curl --ssl-revoke-best-effort -L "https://developer.download.nvidia.com/compute/cudnn/9.20.0/local_installers/cudnn_9.20.0_windows_x86_64.exe" -o "cuDNN.exe"
+    - name: Install cuDNN
+      if: steps.cache-cudnn.outputs.cache-hit != 'true'
+      run: |
+        Start-Process -Wait "cuDNN.exe" -ArgumentList "-s"
+    - name: Set cuDNN path
+      run: |
+        echo "CUDNN_PATH=C:\Program Files\NVIDIA\CUDNN\v9.20" >> $env:GITHUB_ENV
+        echo "CUDNN_HOME=C:\Program Files\NVIDIA\CUDNN\v9.20" >> $env:GITHUB_ENV
+        Add-Content -Path $env:GITHUB_PATH -Value "C:\Program Files\NVIDIA\CUDNN\v9.20\bin\${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}\x64"
+        echo "PATH=$Env:Path" >> $env:GITHUB_ENV
+
+    - name: Download TensorRT
+      run: |
+        curl --ssl-revoke-best-effort --create-dirs -L "httpshttps://developer.download.nvidia.com/compute/machine-learning/tensorrt/${{env.TENSORRT_VERSION_MAJOR}}.${{env.TENSORRT_VERSION_MINOR}}.${{env.TENSORRT_VERSION_PATCH}}/zip/TensorRT-${{env.TENSORRT_VERSION_MAJOR}}.${{env.TENSORRT_VERSION_MINOR}}.${{env.TENSORRT_VERSION_PATCH}}.${{env.TENSORRT_VERSION_BUILD}}.Windows.amd64.cuda-${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}.zip" -o "TensorRT.zip" || true
+        7z x "TensorRT.zip"
+        Add-Content -Path $env:GITHUB_PATH -Value "${{github.workspace}}\TensorRT-${{env.TENSORRT_VERSION_MAJOR}}.${{env.TENSORRT_VERSION_MINOR}}.${{env.TENSORRT_VERSION_PATCH}}.${{env.TENSORRT_VERSION_BUILD}}\bin"
 
     - name: Download TensorRT RTX
       run: |
@@ -128,17 +138,22 @@ jobs:
         --config Release
         --build_dir build
         --parallel
+        --use_dml
+        --use_cuda
+        --cuda_version ${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}
+        --cuda_home "${{env.CUDA_PATH}}"
+        --cudnn_home "${{env.CUDNN_PATH}}"
+        --use_tensorrt
+        --tensorrt_home "${{github.workspace}}\TensorRT-${{env.TENSORRT_VERSION_MAJOR}}.${{env.TENSORRT_VERSION_MINOR}}.${{env.TENSORRT_VERSION_PATCH}}.${{env.TENSORRT_VERSION_BUILD}}"
         --use_nv_tensorrt_rtx
         --tensorrt_rtx_home "${{github.workspace}}\TensorRT-RTX-${{env.TENSORRT_RTX_VERSION_MAJOR}}.${{env.TENSORRT_RTX_VERSION_MINOR}}.${{env.TENSORRT_RTX_VERSION_PATCH}}.${{env.TENSORRT_RTX_VERSION_BUILD}}"
-        --cuda_home "${{env.CUDA_PATH}}"
         --cmake_generator "Visual Studio 17 2022"
         --build_shared_lib
         --skip_tests
         --build
         --update
         --use_vcpkg
-        --cuda_version ${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}
-        --cmake_extra_defines CMAKE_CUDA_COMPILER="${{env.CUDA_PATH}}\bin\nvcc"
+        --cmake_extra_defines CMAKE_CUDA_COMPILER="${{env.CUDA_PATH}}\bin\nvcc" CMAKE_CUDA_ARCHITECTURES=native
 
     - name: List files
       run: ls -R
