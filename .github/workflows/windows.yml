@@ -50,20 +50,18 @@ jobs:
         "${{github.workspace}}"
         --branch ${{env.Branch}}
         --recurse-submodules
-
-    - name: Get current date, commit hash and count
-      run: |
-        echo "FirstCommitHash=$(git rev-list --max-parents=0 HEAD --first-parent)" >> $env:GITHUB_ENV
-        echo "CommitHash=$(git rev-parse HEAD)" >> $env:GITHUB_ENV
-        echo "CommitHashShort=$(git rev-parse --short=7 HEAD)" >> $env:GITHUB_ENV
-        echo "CommitCount=$(git rev-list --count HEAD)" >> $env:GITHUB_ENV
-        echo "CommitDate=$(git show -s --date=format:'%Y-%m-%d' --format=%cd)" >> $env:GITHUB_ENV
+        --depth 1
 
     - name: Get Visual Studio path
       run: |
         vswhere.exe -property installationPath
         echo "VS_PATH=$(vswhere.exe -property installationPath)" >> $env:GITHUB_ENV
 
+#    - name: Get cl.exe path
+#      run: |
+#        vswhere.exe -property installationPath
+#        echo "CL_PATH=$(vswhere.exe -find "**\bin\HostX64\x64\cl.exe")" >> $env:GITHUB_ENV
+        
     - uses: ilammy/msvc-dev-cmd@v1
     
     - name: Cache CUDA
