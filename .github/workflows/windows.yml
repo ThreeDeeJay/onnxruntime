@@ -64,6 +64,8 @@ jobs:
         vswhere.exe -property installationPath
         echo "VS_PATH=$(vswhere.exe -property installationPath)" >> $env:GITHUB_ENV
 
+    - uses: ilammy/msvc-dev-cmd@v1
+    
     - name: Cache CUDA
       id: cache-cuda
       uses: actions/cache@v5
