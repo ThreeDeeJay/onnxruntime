@@ -128,6 +128,7 @@ jobs:
         --config Release
         --build_dir build
         --parallel
+        --use_dml
         --use_nv_tensorrt_rtx
         --tensorrt_rtx_home "${{github.workspace}}\TensorRT-RTX-${{env.TENSORRT_RTX_VERSION_MAJOR}}.${{env.TENSORRT_RTX_VERSION_MINOR}}.${{env.TENSORRT_RTX_VERSION_PATCH}}.${{env.TENSORRT_RTX_VERSION_BUILD}}"
         --cuda_home "${{env.CUDA_PATH}}"
