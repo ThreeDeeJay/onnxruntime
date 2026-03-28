@@ -153,7 +153,7 @@ jobs:
         --build
         --update
         --use_vcpkg
-        --cmake_extra_defines CMAKE_CUDA_COMPILER="${{env.CUDA_PATH}}\bin\nvcc" CMAKE_CUDA_ARCHITECTURES="75-virtual"
+        --cmake_extra_defines CMAKE_CUDA_COMPILER="${{env.CUDA_PATH}}\bin\nvcc" CMAKE_CUDA_ARCHITECTURES="75"
 #CMAKE_CUDA_ARCHITECTURES=all
 #CMAKE_CUDA_ARCHITECTURES="86;89;120"
 
