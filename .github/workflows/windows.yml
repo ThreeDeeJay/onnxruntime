@@ -52,10 +52,10 @@ jobs:
         --recurse-submodules
         --depth 1
 
-    - name: Patch to support Turing (CC 75
+    - name: Patch to support Turing (CC 75)
       run: >
         curl
-        https://github.com/ThreeDeeJay/dsoal/commit/b7c076e57648bb5da32ee7191501ee1beb48f2ed.patch |
+        https://github.com/ThreeDeeJay/onnxruntime/commit/706e43d678713568f3ab3f762946fd4fc05c17fa.patch |
         git apply -v --index
 
     - name: Get Visual Studio path
