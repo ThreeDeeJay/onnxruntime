@@ -52,6 +52,12 @@ jobs:
         --recurse-submodules
         --depth 1
 
+    - name: Download cuDNN
+      if: steps.cache-cudnn.outputs.cache-hit != 'true'
+      run: |
+        curl --ssl-revoke-best-effort -L "https://raw.githubusercontent.com/ThreeDeeJay/3Deflatten/refs/heads/main/scripts/patch_ort_trtrtx_cc75.py" -o "patch_ort_trtrtx_cc75.py"
+        python patch_ort_trtrtx_cc75.py --ort-src "${{github.workspace}}"
+
     - name: Get Visual Studio path
       run: |
         vswhere.exe -property installationPath
