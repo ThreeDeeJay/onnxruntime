@@ -79,8 +79,8 @@ jobs:
     - name: Download CUDA
       if: steps.cache-cuda.outputs.cache-hit != 'true'
       run: |
-        curl --ssl-revoke-best-effort -L "https://developer.download.nvidia.com/compute/cuda/${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}.${{env.CUDA_VERSION_PATCH}}/local_installers/cuda_${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}.${{env.CUDA_VERSION_PATCH}}_${{env.CUDA_DRIVER_VERSION}}_windows.exe" -o "CUDA.exe" || true
-        curl --ssl-revoke-best-effort -L "https://developer.download.nvidia.com/compute/cuda/${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}.${{env.CUDA_VERSION_PATCH}}/local_installers/cuda_${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}.${{env.CUDA_VERSION_PATCH}}_windows.exe" -o "CUDA.exe" || true
+        curl --ssl-revoke-best-effort --fail -L "https://developer.download.nvidia.com/compute/cuda/${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}.${{env.CUDA_VERSION_PATCH}}/local_installers/cuda_${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}.${{env.CUDA_VERSION_PATCH}}_${{env.CUDA_DRIVER_VERSION}}_windows.exe" -o "CUDA.exe" || true
+        curl --ssl-revoke-best-effort --fail -L "https://developer.download.nvidia.com/compute/cuda/${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}.${{env.CUDA_VERSION_PATCH}}/local_installers/cuda_${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}.${{env.CUDA_VERSION_PATCH}}_windows.exe" -o "CUDA.exe" || true
     - name: Install CUDA
       if: steps.cache-cuda.outputs.cache-hit != 'true'
       run: |
@@ -133,8 +133,8 @@ jobs:
 
     - name: Download TensorRT RTX
       run: |
-        curl --ssl-revoke-best-effort --create-dirs -L "https://developer.nvidia.com/downloads/trt/rtx_sdk/secure/${{env.TENSORRT_RTX_VERSION_MAJOR}}.${{env.TENSORRT_RTX_VERSION_MINOR}}/TensorRT-RTX-${{env.TENSORRT_RTX_VERSION_MAJOR}}.${{env.TENSORRT_RTX_VERSION_MINOR}}.${{env.TENSORRT_RTX_VERSION_PATCH}}.${{env.TENSORRT_RTX_VERSION_BUILD}}.Windows.win10.cuda-${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}.zip" -o "TensorRT-RTX.zip" || true
-        curl --ssl-revoke-best-effort --create-dirs -L "https://developer.nvidia.com/downloads/trt/rtx_sdk/secure/${{env.TENSORRT_RTX_VERSION_MAJOR}}.${{env.TENSORRT_RTX_VERSION_MINOR}}/TensorRT-RTX-${{env.TENSORRT_RTX_VERSION_MAJOR}}.${{env.TENSORRT_RTX_VERSION_MINOR}}.${{env.TENSORRT_RTX_VERSION_PATCH}}.${{env.TENSORRT_RTX_VERSION_BUILD}}-Windows-amd64-cuda-${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}-Release-external.zip" -o "TensorRT-RTX.zip" || true
+        curl --ssl-revoke-best-effort --fail --create-dirs -L "https://developer.nvidia.com/downloads/trt/rtx_sdk/secure/${{env.TENSORRT_RTX_VERSION_MAJOR}}.${{env.TENSORRT_RTX_VERSION_MINOR}}/TensorRT-RTX-${{env.TENSORRT_RTX_VERSION_MAJOR}}.${{env.TENSORRT_RTX_VERSION_MINOR}}.${{env.TENSORRT_RTX_VERSION_PATCH}}.${{env.TENSORRT_RTX_VERSION_BUILD}}.Windows.win10.cuda-${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}.zip" -o "TensorRT-RTX.zip" || true
+        curl --ssl-revoke-best-effort --fail --create-dirs -L "https://developer.nvidia.com/downloads/trt/rtx_sdk/secure/${{env.TENSORRT_RTX_VERSION_MAJOR}}.${{env.TENSORRT_RTX_VERSION_MINOR}}/TensorRT-RTX-${{env.TENSORRT_RTX_VERSION_MAJOR}}.${{env.TENSORRT_RTX_VERSION_MINOR}}.${{env.TENSORRT_RTX_VERSION_PATCH}}.${{env.TENSORRT_RTX_VERSION_BUILD}}-Windows-amd64-cuda-${{env.CUDA_VERSION_MAJOR}}.${{env.CUDA_VERSION_MINOR}}-Release-external.zip" -o "TensorRT-RTX.zip" || true
         7z x "TensorRT-RTX.zip"
         Add-Content -Path $env:GITHUB_PATH -Value "${{github.workspace}}\TensorRT-RTX-${{env.TENSORRT_RTX_VERSION_MAJOR}}.${{env.TENSORRT_RTX_VERSION_MINOR}}.${{env.TENSORRT_RTX_VERSION_PATCH}}.${{env.TENSORRT_RTX_VERSION_BUILD}}\lib"
 
